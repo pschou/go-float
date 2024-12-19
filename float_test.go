@@ -43,5 +43,30 @@ func ExampleSplitBytes() {
 	// float 23.1234
 	// float -17.564
 	// float -123.456
+}
+
+func ExampleOverlap() {
+	slice5 := float.Overlap(140.123, 77.456, 8, 7, 5)
+	a, b := float.Part(slice5, 8, 7)
+	fmt.Printf("5 floatA %g\n", a)
+	fmt.Printf("5 floatB %g\n", b)
+
+	slice7 := float.Overlap(140.123, 77.456, 8, 7, 7)
+	a, b = float.Part(slice7, 8, 7)
+	fmt.Printf("7 floatA %g\n", a)
+	fmt.Printf("7 floatB %g\n", b)
+
+	slice9 := float.Overlap(140.123, 77.456, 8, 7, 9)
+	a, b = float.Part(slice9, 8, 7)
+	fmt.Printf("9 floatA %g\n", a)
+	fmt.Printf("9 floatB %g\n", b)
+
+	// Output:
+	// 5 floatA 140.12255859375
+	// 5 floatB 77.455810546875
+	// 7 floatA 140.12299919128418
+	// 7 floatB 77.45599937438965
+	// 9 floatA 140.12299999594688
+	// 9 floatB 77.45599999651313
 
 }
