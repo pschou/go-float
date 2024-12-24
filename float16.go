@@ -4,11 +4,10 @@ import (
 	"math"
 )
 
-// To determine the limits of the float16's [Encode16] and [From16] one can
+// To determine the limits of the float16's [To16] and [From16] one can
 // use [Limits16] to derive the limits of the notation.  Note that zero is never
 // represented because Float16 expects the values to be on a Exponent with a 1
-// prefixed Mantissa scale with sign bit.  It is up to the user to account for
-// the minimum value by rounding down to zero when appropriate.
+// prefixed Mantissa scale with sign bit.
 //
 // NOTE: It is up to the user to account for the minimum value by rounding down
 // to zero when appropriate.
@@ -17,7 +16,7 @@ func Limits16(expBits, expShift int) (lower, upper float32) {
 		From16(0x7fff, expBits, expShift)
 }
 
-// To determine the limits of the float16's [EncodeU16] and [FromU16] one
+// To determine the limits of the float16's [ToU16] and [FromU16] one
 // can use [LimitsU16] to derive the limits of the notation.  Note that zero is
 // never represented because Float16 expects the values to be on a Exponent
 // with a 1 prefixed Mantissa scale.
@@ -83,7 +82,7 @@ func ToU16(f float32, expBits, expShift int) uint16 {
 	return uint16(in)
 }
 
-// Use this to expand the [Encode16] and restore the number back to like the
+// Use this to expand the [To16] and restore the number back to like the
 // original, the represented value.
 func From16(in uint16, expBits, expShift int) float32 {
 	sign := uint32(in&0x8000) << 16
@@ -94,7 +93,7 @@ func From16(in uint16, expBits, expShift int) float32 {
 	return math.Float32frombits(uint32(in<<(expBits+1))<<7 | sign | uint32(exp<<23))
 }
 
-// Use this to expand the [EncodeU16] and restore the number back to like the
+// Use this to expand the [ToU16] and restore the number back to like the
 // original, the represented value.
 func FromU16(in uint16, expBits, expShift int) float32 {
 	exp := int(in>>(16-expBits)) + 127 + expShift
