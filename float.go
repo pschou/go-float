@@ -8,36 +8,36 @@ import (
 // This function takes a byte slice in BigEndian order and restores it to a
 // float value with the predetermined upper exponent, the maximum value a
 // numberic number can be.
-func ReadScaled(b []byte, exponent int) float64 {
+func Scaled(b []byte, exponent int) float64 {
 	in := byteToUint(b)
-	return ReadScaled64(in, exponent)
+	return FromScaled64(in, exponent)
 }
 
 // This function takes a byte slice in BigEndian order and restores it to a
 // float value with the predetermined upper exponent, the maximum value a
 // numberic number can be.
-func ReadUScaled(b []byte, exponent int) float64 {
+func UScaled(b []byte, exponent int) float64 {
 	in := byteToUint(b)
-	return ReadUScaled64(in, exponent)
+	return FromUScaled64(in, exponent)
 }
 
-// This function takes a uint64 and restores it to a signed float value with
+// This function takes a uint32 and restores it to an unsigned float value with
 // the predetermined upper exponent, the upper numeric bound.
-func ReadUScaled32(in uint32, exponent int) float32 {
+func FromUScaled32(in uint32, exponent int) float32 {
 	// TODO: Consider re-writing this for 32bit processors
-	return float32(ReadUScaled64(uint64(in)<<32, exponent))
+	return float32(FromUScaled64(uint64(in)<<32, exponent))
 }
 
-// This function takes a uint64 and restores it to a signed float value with
+// This function takes a uint32 and restores it to a signed float value with
 // the predetermined upper exponent, the upper numeric bound.
-func ReadScaled32(in uint32, exponent int) float32 {
+func FromScaled32(in uint32, exponent int) float32 {
 	// TODO: Consider re-writing this for 32bit processors
-	return float32(ReadScaled64(uint64(in)<<32, exponent))
+	return float32(FromScaled64(uint64(in)<<32, exponent))
 }
 
 // This function takes a uint64 and restores it to a signed float value with
 // the predetermined upper exponent, the upper numeric bound.
-func ReadScaled64(in uint64, exponent int) float64 {
+func FromScaled64(in uint64, exponent int) float64 {
 	sign := in & 0x8000000000000000
 	in = in & 0x7fffffffffffffff
 
@@ -65,7 +65,7 @@ func ReadScaled64(in uint64, exponent int) float64 {
 
 // This function takes a uint64 and restores it to an unsigned float value with
 // the predetermined upper exponent, the upper numeric bound.
-func ReadUScaled64(in uint64, exponent int) float64 {
+func FromUScaled64(in uint64, exponent int) float64 {
 	// Find the first bit
 	shift := int(63)
 	for in>>shift == 0 {
@@ -92,14 +92,15 @@ func ReadUScaled64(in uint64, exponent int) float64 {
 // value.  The byte string is left aligned and in BigEndian format so chomping
 // off bits will decrease the precision.
 func PutScaled32(out []byte, f float32, exponent int) {
-	val := Scaled32(f, exponent)
+	val := ToScaled32(f, exponent)
 	putUint32(out, val)
 	return
 }
 
-// Take a float32 value and scale the mantissa to fit within a defined exponent
-// value.  The byte string is left aligned and in BigEndian format so chomping
-// off bits will decrease the precision.
+// Take a positive only float32 value and scale the mantissa to fit within a
+// defined exponent value.  The byte string is left aligned and in BigEndian
+// format so chomping off bits will decrease the precision.  By omitting the
+// sign one can save a bit and use it to increase precision.
 func PutUScaled32(out []byte, f float32, exponent int) {
 	val := UScaled32(f, exponent)
 	putUint32(out, val)
@@ -109,7 +110,7 @@ func PutUScaled32(out []byte, f float32, exponent int) {
 // Take a float32 value and scale the mantissa to fit within a defined exponent
 // value.  The uint32 string is like a mantissa aligned at the largest big so
 // shifting off lower bits (to the right) will decrease the precision.
-func Scaled32(f float32, exponent int) (val uint32) {
+func ToScaled32(f float32, exponent int) (val uint32) {
 	val = math.Float32bits(f)
 	sign := val & 0x80000000
 	exp := int((val >> 23) & 0xff)
@@ -130,8 +131,9 @@ func Scaled32(f float32, exponent int) (val uint32) {
 }
 
 // Take a float32 value and scale the mantissa to fit within a defined exponent
-// value.  The uint32 string is like a mantissa aligned at the largest big so
-// shifting off lower bits (to the right) will decrease the precision.
+// value with out regard to sign.  The uint32 string is like a mantissa aligned
+// at the largest big so shifting off lower bits (to the right) will decrease
+// the precision.
 func UScaled32(f float32, exponent int) (val uint32) {
 	val = math.Float32bits(f)
 	exp := int((val >> 23) & 0xff)
@@ -154,7 +156,7 @@ func UScaled32(f float32, exponent int) (val uint32) {
 // value.  The byte string is left aligned and in BigEndian format so chomping
 // off bits will decrease the precision.
 func PutUScaled64(out []byte, f float64, exponent int) {
-	val := UScaled64(f, exponent)
+	val := ToUScaled64(f, exponent)
 	putUint(out, val)
 	return
 }
@@ -163,7 +165,7 @@ func PutUScaled64(out []byte, f float64, exponent int) {
 // value.  The byte string is left aligned and in BigEndian format so chomping
 // off bits will decrease the precision.
 func PutScaled64(out []byte, f float64, exponent int) {
-	val := Scaled64(f, exponent)
+	val := ToScaled64(f, exponent)
 	putUint(out, val)
 	return
 }
@@ -171,7 +173,7 @@ func PutScaled64(out []byte, f float64, exponent int) {
 // Take a float64 value and scale the mantissa to fit within a defined exponent
 // value.  The uint64 string is like a mantissa aligned at the largest big so
 // shifting off lower bits (to the right) will decrease the precision.
-func UScaled64(f float64, exponent int) (val uint64) {
+func ToUScaled64(f float64, exponent int) (val uint64) {
 	val = math.Float64bits(f)
 	exp := int((val >> 52) & 0x07ff)
 
@@ -192,7 +194,7 @@ func UScaled64(f float64, exponent int) (val uint64) {
 // Take a float64 value and scale the mantissa to fit within a defined exponent
 // value.  The uint64 string is like a mantissa aligned at the largest big so
 // shifting off lower bits (to the right) will decrease the precision.
-func Scaled64(f float64, exponent int) (val uint64) {
+func ToScaled64(f float64, exponent int) (val uint64) {
 	val = math.Float64bits(f)
 	sign := val & 0x8000000000000000
 	exp := int((val >> 52) & 0x07ff)

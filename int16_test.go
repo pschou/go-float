@@ -14,11 +14,11 @@ func ExampleInt16() {
 		//fmt.Println(ReadInt16([]byte{byte(i >> 8), byte(i)}, 4))
 		b_in[0] = byte(i)
 		b_in[1] = 0xff
-		fi := float.DecodeInt16(b_in, ebits)
-		float.EncodeInt16(b_out, uint(fi), ebits)
+		fi := float.Int16(b_in, ebits)
+		float.PutInt16(b_out, uint(fi), ebits)
 		fmt.Println(i, b_in, fi, b_out)
 	}
-	fmt.Println("Maximum", float.DecodeInt16([]byte{0xff, 0xff}, ebits))
+	fmt.Println("Maximum", float.Int16([]byte{0xff, 0xff}, ebits))
 
 	// Output:
 	// 0 [0 255] 255 [0 255]

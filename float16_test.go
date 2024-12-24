@@ -6,18 +6,18 @@ import (
 	"github.com/pschou/go-float"
 )
 
-func ExampleEncodeU16() {
-	b := float.EncodeU16(3.1415, 2, 0)
-	exp := float.DecodeU16(b, 2, 0)
+func ExampleToU16() {
+	b := float.ToU16(3.1415, 2, 0)
+	exp := float.FromU16(b, 2, 0)
 	fmt.Println("float", exp)
 	// Output:
 	// float 3.1414795
 }
 
-func ExampleEncodeU16Walk() {
+func ExampleToU16Walk() {
 	for _, f := range []float32{100, 1000, 10000, 100000, 1000000, 10000000} {
-		b := float.EncodeU16(f, 3, 12)
-		exp := float.DecodeU16(b, 3, 12)
+		b := float.ToU16(f, 3, 12)
+		exp := float.FromU16(b, 3, 12)
 		fmt.Println("float", exp)
 	}
 	// Output:
@@ -29,25 +29,25 @@ func ExampleEncodeU16Walk() {
 	// float 1.048512e+06
 }
 
-func ExampleEncode16() {
+func ExampleTo16() {
 	// Fits within 1 to 3.999
-	b := float.Encode16(3.1415, 1, 0)
-	exp := float.Decode16(b, 1, 0)
+	b := float.To16(3.1415, 1, 0)
+	exp := float.From16(b, 1, 0)
 	fmt.Println("1,0 float", exp)
 
 	// Does not fit within 0.5 to 1.999
-	b = float.Encode16(3.1415, 1, -1)
-	exp = float.Decode16(b, 1, -1)
+	b = float.To16(3.1415, 1, -1)
+	exp = float.From16(b, 1, -1)
 	fmt.Println("1,-1 float", exp)
 
 	// Fits within 2 to 7.999
-	b = float.Encode16(3.1415, 1, 1)
-	exp = float.Decode16(b, 1, 1)
+	b = float.To16(3.1415, 1, 1)
+	exp = float.From16(b, 1, 1)
 	fmt.Println("1,1 float", exp)
 
 	// Does not fit within 4 to 15.999
-	b = float.Encode16(3.1415, 1, 2)
-	exp = float.Decode16(b, 1, 2)
+	b = float.To16(3.1415, 1, 2)
+	exp = float.From16(b, 1, 2)
 	fmt.Println("1,2 float", exp)
 
 	// Output:
