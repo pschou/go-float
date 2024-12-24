@@ -91,6 +91,10 @@ func FromUScaled64(in uint64, exponent int) float64 {
 // Take a float32 value and scale the mantissa to fit within a defined exponent
 // value.  The byte string is left aligned and in BigEndian format so chomping
 // off bits will decrease the precision.
+//
+// When less than 4 bytes are provided the mantissa will be chomped down to fit
+// within the slice provided.  This way one can make a Float24 or Float16 and
+// use the [Scaled] to reverse.
 func PutScaled32(out []byte, f float32, exponent int) {
 	val := ToScaled32(f, exponent)
 	putUint32(out, val)
@@ -101,6 +105,10 @@ func PutScaled32(out []byte, f float32, exponent int) {
 // defined exponent value.  The byte string is left aligned and in BigEndian
 // format so chomping off bits will decrease the precision.  By omitting the
 // sign one can save a bit and use it to increase precision.
+//
+// When less than 4 bytes are provided the mantissa will be chomped down to fit
+// within the slice provided.  This way one can make a Float24 or Float16 and
+// use the [Scaled] to reverse.
 func PutUScaled32(out []byte, f float32, exponent int) {
 	val := UScaled32(f, exponent)
 	putUint32(out, val)
@@ -155,6 +163,10 @@ func UScaled32(f float32, exponent int) (val uint32) {
 // Take a float64 value and scale the mantissa to fit within a defined exponent
 // value.  The byte string is left aligned and in BigEndian format so chomping
 // off bits will decrease the precision.
+//
+// When less than 8 bytes are provided the mantissa will be chomped down to fit
+// within the slice provided.  This way one can make a Float40 or higher and
+// use the [Scaled] to reverse.
 func PutUScaled64(out []byte, f float64, exponent int) {
 	val := ToUScaled64(f, exponent)
 	putUint(out, val)
@@ -164,6 +176,10 @@ func PutUScaled64(out []byte, f float64, exponent int) {
 // Take a float64 value and scale the mantissa to fit within a defined exponent
 // value.  The byte string is left aligned and in BigEndian format so chomping
 // off bits will decrease the precision.
+//
+// When less than 8 bytes are provided the mantissa will be chomped down to fit
+// within the slice provided.  This way one can make a Float40 or higher and
+// use the [Scaled] to reverse.
 func PutScaled64(out []byte, f float64, exponent int) {
 	val := ToScaled64(f, exponent)
 	putUint(out, val)
