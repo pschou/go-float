@@ -6,33 +6,48 @@ import (
 	"github.com/pschou/go-float"
 )
 
-func ExampleSqueezeU16() {
-	b := float.SqueezeU16(3.1415, 2, 0)
-	exp := float.ExpandU16(b, 2, 0)
+func ExampleEncodeU16() {
+	b := float.EncodeU16(3.1415, 2, 0)
+	exp := float.DecodeU16(b, 2, 0)
 	fmt.Println("float", exp)
 	// Output:
 	// float 3.1414795
 }
 
-func ExampleSqueeze16() {
+func ExampleEncodeU16Walk() {
+	for _, f := range []float32{100, 1000, 10000, 100000, 1000000, 10000000} {
+		b := float.EncodeU16(f, 3, 12)
+		exp := float.DecodeU16(b, 3, 12)
+		fmt.Println("float", exp)
+	}
+	// Output:
+	// float 4096
+	// float 4096
+	// float 10000
+	// float 100000
+	// float 1e+06
+	// float 1.048512e+06
+}
+
+func ExampleEncode16() {
 	// Fits within 1 to 3.999
-	b := float.Squeeze16(3.1415, 1, 0)
-	exp := float.Expand16(b, 1, 0)
+	b := float.Encode16(3.1415, 1, 0)
+	exp := float.Decode16(b, 1, 0)
 	fmt.Println("1,0 float", exp)
 
 	// Does not fit within 0.5 to 1.999
-	b = float.Squeeze16(3.1415, 1, -1)
-	exp = float.Expand16(b, 1, -1)
+	b = float.Encode16(3.1415, 1, -1)
+	exp = float.Decode16(b, 1, -1)
 	fmt.Println("1,-1 float", exp)
 
 	// Fits within 2 to 7.999
-	b = float.Squeeze16(3.1415, 1, 1)
-	exp = float.Expand16(b, 1, 1)
+	b = float.Encode16(3.1415, 1, 1)
+	exp = float.Decode16(b, 1, 1)
 	fmt.Println("1,1 float", exp)
 
 	// Does not fit within 4 to 15.999
-	b = float.Squeeze16(3.1415, 1, 2)
-	exp = float.Expand16(b, 1, 2)
+	b = float.Encode16(3.1415, 1, 2)
+	exp = float.Decode16(b, 1, 2)
 	fmt.Println("1,2 float", exp)
 
 	// Output:
@@ -42,26 +57,26 @@ func ExampleSqueeze16() {
 	// 1,2 float 4
 }
 
-func ExampleSpreadU16() {
-	a, z := float.SpreadU16(0, 0)
+func ExampleLimitsU16() {
+	a, z := float.LimitsU16(0, 0)
 	fmt.Println("0,0 lower", a, "upper", z)
 
-	a, z = float.SpreadU16(0, 1)
+	a, z = float.LimitsU16(0, 1)
 	fmt.Println("0,1 lower", a, "upper", z)
 
-	a, z = float.SpreadU16(1, 0)
+	a, z = float.LimitsU16(1, 0)
 	fmt.Println("1,0 lower", a, "upper", z)
 
-	a, z = float.SpreadU16(1, 1)
+	a, z = float.LimitsU16(1, 1)
 	fmt.Println("1,1 lower", a, "upper", z)
 
-	a, z = float.SpreadU16(4, 1)
+	a, z = float.LimitsU16(4, 1)
 	fmt.Println("4,1 lower", a, "upper", int(z))
 
-	a, z = float.SpreadU16(5, 1)
+	a, z = float.LimitsU16(5, 1)
 	fmt.Println("5,1 lower", a, "upper", int(z))
 
-	a, z = float.SpreadU16(6, 1)
+	a, z = float.LimitsU16(6, 1)
 	fmt.Println("6,1 lower", a, "upper", int(z))
 
 	// Output:
@@ -73,21 +88,27 @@ func ExampleSpreadU16() {
 	// 5,1 lower 2 upper 8587837440
 	// 6,1 lower 2 upper 9218868437227405312
 }
-func ExampleSpread16() {
-	a, z := float.Spread16(0, 0)
+func ExampleLimits16() {
+	a, z := float.Limits16(0, 0)
 	fmt.Println("0,0 lower", a, "upper", z)
 
-	a, z = float.Spread16(0, 1)
+	a, z = float.Limits16(0, 1)
 	fmt.Println("0,1 lower", a, "upper", z)
 
-	a, z = float.Spread16(1, 0)
+	a, z = float.Limits16(1, 0)
 	fmt.Println("1,0 lower", a, "upper", z)
 
-	a, z = float.Spread16(1, 1)
+	a, z = float.Limits16(1, 1)
 	fmt.Println("1,1 lower", a, "upper", z)
 
-	a, z = float.Spread16(3, 1)
+	a, z = float.Limits16(3, 1)
 	fmt.Println("3,1 lower", a, "upper", z)
+
+	// 1 = 0,1  then  15,1
+	// 2 = 0..3 then  14,2
+	// 3 = 0..7 then  13,3
+	// 4 = 0..15 then 12,4
+	// 5,11 = 0..2047  then
 
 	// Output:
 	// 0,0 lower 1 upper 1.9999695
