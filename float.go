@@ -230,6 +230,30 @@ func ToScaled64(f float64, exponent int) (val uint64) {
 	return
 }
 
+func byteToUintKeep(b []byte, keep byte) (val uint) {
+	switch len(b) {
+	case 7:
+		val = uint(b[0]&keep)<<48 | uint(b[1])<<40 | uint(b[2])<<32 | uint(b[3])<<24 | uint(b[4])<<16 | uint(b[5])<<8 | uint(b[6])
+	case 6:
+		val = uint(b[0]&keep)<<40 | uint(b[1])<<32 | uint(b[2])<<24 | uint(b[3])<<16 | uint(b[4])<<8 | uint(b[5])
+	case 5:
+		val = uint(b[0]&keep)<<32 | uint(b[1])<<24 | uint(b[2])<<16 | uint(b[3])<<8 | uint(b[4])
+	case 4:
+		val = uint(b[0]&keep)<<24 | uint(b[1])<<16 | uint(b[2])<<8 | uint(b[3])
+	case 3:
+		val = uint(b[0]&keep)<<16 | uint(b[1])<<8 | uint(b[2])
+	case 2:
+		val = uint(b[0]&keep)<<8 | uint(b[1])
+	case 1:
+		val = uint(b[0] & keep)
+	case 0:
+		val = 0
+	default:
+		val = uint(b[7]) | uint(b[6])<<8 | uint(b[5])<<16 | uint(b[4])<<24 | uint(b[3])<<32 | uint(b[2])<<40 | uint(b[1])<<48 | uint(b[0]&keep)<<56
+	}
+	return
+}
+
 func byteToUint(b []byte) (val uint64) {
 	switch len(b) {
 	case 8:
@@ -351,6 +375,56 @@ func putUint(b []byte, v uint64) {
 		b[1] = byte(v >> 48)
 	case 1:
 		b[0] = byte(v >> 56)
+	}
+	return
+}
+
+func putUintRight(b []byte, v uint) {
+	switch len(b) {
+	case 8:
+		b[0] = byte(v >> 56)
+		b[1] = byte(v >> 48)
+		b[2] = byte(v >> 40)
+		b[3] = byte(v >> 32)
+		b[4] = byte(v >> 24)
+		b[5] = byte(v >> 16)
+		b[6] = byte(v >> 8)
+		b[7] = byte(v)
+	case 7:
+		b[0] = byte(v >> 48)
+		b[1] = byte(v >> 40)
+		b[2] = byte(v >> 32)
+		b[3] = byte(v >> 24)
+		b[4] = byte(v >> 16)
+		b[5] = byte(v >> 8)
+		b[6] = byte(v)
+	case 6:
+		b[0] = byte(v >> 40)
+		b[1] = byte(v >> 32)
+		b[2] = byte(v >> 24)
+		b[3] = byte(v >> 16)
+		b[4] = byte(v >> 8)
+		b[5] = byte(v)
+	case 5:
+		b[0] = byte(v >> 32)
+		b[1] = byte(v >> 24)
+		b[2] = byte(v >> 16)
+		b[3] = byte(v >> 8)
+		b[4] = byte(v)
+	case 4:
+		b[0] = byte(v >> 24)
+		b[1] = byte(v >> 16)
+		b[2] = byte(v >> 8)
+		b[3] = byte(v)
+	case 3:
+		b[0] = byte(v >> 16)
+		b[1] = byte(v >> 8)
+		b[2] = byte(v)
+	case 2:
+		b[0] = byte(v >> 8)
+		b[1] = byte(v)
+	case 1:
+		b[0] = byte(v)
 	}
 	return
 }
