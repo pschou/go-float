@@ -1,6 +1,7 @@
 package float
 
-// Decode the encoded int.
+// Decode the encoded Int31.  The Int31 type is an integer with 3 significant
+// figures and an additional half.  See [PutUInt31] for additional details.
 func UInt31(b []byte) uint {
 	val := byteToUintKeep(b, 0xff)
 	if val <= 1000 {
@@ -14,7 +15,13 @@ func UInt31(b []byte) uint {
 	return (1000 + val*5) * exp
 }
 
-// Encode an int value into an encoded int.
+// Encode an int value into an encoded Int31 type.
+//
+// The purpose of this encoding is to record numbers with 3 (and the half step)
+// significant figures in the least number of bits.  Often this is used for
+// storage of numbers which do not need unit level precision when the numbers
+// get larger thus enabling values which would otherwise take 8 bytes of
+// storage in 2 bytes.
 func PutUInt31(b []byte, val uint) {
 	if val <= 1000 {
 		putUintRight(b, val)
